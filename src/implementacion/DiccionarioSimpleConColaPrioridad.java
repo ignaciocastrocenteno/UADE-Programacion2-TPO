@@ -1,93 +1,73 @@
 package implementacion;
 
+import especificacion.ConjuntoTDA;
 import especificacion.DiccionarioSimpleTDA;
 import especificacion.ColaPrioridadTDA;
-import especificacion.ConjuntoTDA;
 
-public class DiccionarioSimpleConColaPrioridad implements DiccionarioSimpleTDA {
-    private ColaPrioridadTDA colaP;
-
-    public void inicializarDiccionario() {
-        colaP = new ColaPrioridadDin(); // C
-        colaP.inicializarCola(); // C
+public class DiccionarioSimple implements DiccionarioSimpleTDA { 
+    // ahorro de redundancias
+    private ColaPrioridad colaPrioridad;  //c
+    // inicializo cola
+    public void inicializarDiccionario() {  //c
+        colaPrioridad = new ColaPrioridad(); //c
+        colaPrioridad.inicializarCola();    //c
     }
-
-    public void agregar(int clave, int valor) {
-        // En un diccionario, las claves son unicas. Por lo tanto, si la clave ya existia, la removemos primero.
-        eliminar(clave); // L
-
-        // Insertamos en la cola priorizando segun la 'clave', y el dato 'valor' se guarda en el contenido
-        colaP.acolarPrioridad(valor, clave); // C
+    //uso eliminar que se fija en todos los valores si es que existe la clave anteriormente en la cola y la elimino y la vuelvo a ingresar
+    public void agregar(int clave, int valor) {//p
+        eliminar(clave); //p                               
+        colaPrioridad.acolarPrioridad(clave, valor); //l    
     }
+    // recorro cola con auxiliar y no acolo si es que la clave coincide con el valor a eliminar
+    public void eliminar(int clave) {//p
+        ColaPrioridad aux = new ColaPrioridad(); //c
+        aux.inicializarCola(); //c
 
-    public void eliminar(int clave) {
-        // Usamos una cola auxiliar para volcar todo excepto el elemento a eliminar
-        ColaPrioridadTDA aux = new ColaPrioridadDin(); // C
-        aux.inicializarCola(); // C
-        
-        // Iteramos sacando elementos uno por uno
-        while (!colaP.colaVacia()) { // L
-            // Si la prioridad (que usamos de clave) NO es la que queremos eliminar, la guardamos
-            if (colaP.prioridad() != clave) { // C
-                aux.acolarPrioridad(colaP.primero(), colaP.prioridad()); // C
+        while (!colaPrioridad.colaVacia()) {//p
+            if (clave != colaPrioridad.primero()) {//c
+                aux.acolarPrioridad(colaPrioridad.primero(), colaPrioridad.prioridad());//l
             }
-
-            // Avanzamos destruyendo el tope actual
-            colaP.desacolar(); // C
+            colaPrioridad.desacolar(); //c                                      
         }
-        
-        // Restauramos los elementos retenidos de vuelta a la cola original
-        while (!aux.colaVacia()) { // L
-            colaP.acolarPrioridad(aux.primero(), aux.prioridad()); // C
-            aux.desacolar(); // C
+        while (!aux.colaVacia()) {//p
+            colaPrioridad.acolarPrioridad(aux.primero(), aux.prioridad());  //l
+            aux.desacolar(); //c    
         }
     }
+    // misma logica que en eliminar se recorre toda la cola hasta encontrar clave que coincida y guardar su valor/prioridad
+    public int recuperar(int clave) {//p
+        ColaPrioridad aux = new ColaPrioridad();//c
+        aux.inicializarCola();//c
+        int valor = 0;//c
 
-    public int recuperar(int clave) {
-        // Cola auxiliar para reconstruir la estructura sin perder datos
-        ColaPrioridadTDA aux = new ColaPrioridadDin(); // C
-        aux.inicializarCola(); // C
-        int res = 0; // C
-        
-        // Vaciamos la cola buscando la clave pedida
-        while (!colaP.colaVacia()) { // L
-            // Cuando la encontramos, guardamos su valor asociado (el campo 'primero')
-            if (colaP.prioridad() == clave) { // C
-                res = colaP.primero(); // C
+        while (!colaPrioridad.colaVacia()) {//p
+            if (clave == colaPrioridad.primero()) {//c   
+                valor = colaPrioridad.prioridad();//c
             }
-
-            // Independientemente de si coincide o no, conservamos todos los elementos
-            aux.acolarPrioridad(colaP.primero(), colaP.prioridad()); // C
-            colaP.desacolar(); // C
+            aux.acolarPrioridad(colaPrioridad.primero(), colaPrioridad.prioridad());//l
+            colaPrioridad.desacolar();//c                  
         }
-        
-        // Retornamos todos los elementos a su estructura original
-        while (!aux.colaVacia()) { // L
-            colaP.acolarPrioridad(aux.primero(), aux.prioridad()); // C
-            aux.desacolar(); // C
+        while (!aux.colaVacia()) {//p
+            colaPrioridad.acolarPrioridad(aux.primero(), aux.prioridad());//l
+            aux.desacolar();//c
         }
-        return res; // C
+        return valor;//c                                 
     }
+    //se recorre guardando los valores en un auxiliar para luego reingresarlos en la cola original y a su vez guardando las claves en un conjunto
+    public ConjuntoTDA claves() {//p
+        Conjunto claves = new Conjunto(); //c
+        claves.inicializarConjunto();//c
+        ColaPrioridad aux = new ColaPrioridad();//c
+        aux.inicializarCola();//c
 
-    public ConjuntoTDA claves() {
-        ConjuntoTDA conj = new ConjuntoDin(); // C
-        conj.inicializarConjunto(); // C
-        ColaPrioridadTDA aux = new ColaPrioridadDin(); // C
-        aux.inicializarCola(); // C
-        
-        // Extraemos destructivamente pero guardando en auxiliar
-        while (!colaP.colaVacia()) { // L
-            // Las prioridades representan nuestras claves, por lo que las agrupamos en un conjunto
-            conj.agregar(colaP.prioridad()); // L
-            aux.acolarPrioridad(colaP.primero(), colaP.prioridad()); // C
-            colaP.desacolar(); // C
+        while (!colaPrioridad.colaVacia()) {//p
+            claves.agregar(colaPrioridad.primero());//l
+            aux.acolarPrioridad(colaPrioridad.primero(), colaPrioridad.prioridad()); //l
+            colaPrioridad.desacolar();//c              
         }
-        
-        // Reponemos todo a la cola de prioridad original para mantener la inmutabilidad de la estructura base
-        while (!aux.colaVacia()) { // L
-            colaP.acolarPrioridad(aux.primero(), aux.prioridad()); // C
-            aux.desacolar(); // C
+        while (!aux.colaVacia()) {//p
+            colaPrioridad.acolarPrioridad(aux.primero(), aux.prioridad());//l
+            aux.desacolar();//c                         
         }
-        return conj; // C
+        return claves;//c                               
     }
 }

@@ -4,103 +4,85 @@ import especificacion.*;
 import implementacion.*;
 
 public class Main {
-    // Ejercicio 6: Porcentaje de pares en una pila
-    public static float porcentajePares(PilaTDA pila) {
-        // Pila auxiliar para no perder los datos de la original
-        PilaTDA aux = new PilaDin();
-        aux.inicializarPila();
-        int total = 0;
-        int pares = 0;
-        
-        // Vaciamos la pila original, contando todos los elementos y filtrando los pares
-        while (!pila.pilaVacia()) {
-            int tope = pila.tope();
-            total++; // Contador general
-            if (tope % 2 == 0) {
-                pares++; // Contador especifico de condicion par
-            }
-            // Guardamos en la auxiliar
-            aux.apilar(tope);
-            pila.desapilar();
-        }
-        
-        // Restauramos el estado original de la pila
-        while (!aux.pilaVacia()) {
-            pila.apilar(aux.tope());
-            aux.desapilar();
-        }
-        
-        // Prevencion de division por cero
-        if (total == 0) return 0f;
-        // Calculo del porcentaje con casteo a flotante para evitar truncamiento entero
-        return (float) pares * 100 / total;
-    }
+    // Ejercicio 6
+    public static float PorcentajeParesPila(PilaTDA pila){//l;
+        //inicializo variables
+        float porcentaje = 0; // c
+        int cantidad = 0; //c 
+        int cantidadPares = 0;//c
+        PilaTDA aux = new PilaTDA();//c
+        aux.inicializarPila();//c
 
-    // Ejercicio 7: Conjunto con los elementos repetidos de la pila
-    public static ConjuntoTDA repetidosPila(PilaTDA pila) {
-        // Pila auxiliar para restauracion
-        PilaTDA aux = new PilaDin();
-        aux.inicializarPila();
-        // Conjunto auxiliar para registrar los elementos que ya vimos al menos una vez
-        ConjuntoTDA unicos = new ConjuntoDin();
-        unicos.inicializarConjunto();
-        // Conjunto final donde guardaremos exclusivamente los repetidos
-        ConjuntoTDA repetidos = new ConjuntoDin();
-        repetidos.inicializarConjunto();
-        
-        // Recorremos la pila completa destructivamente (con resguardo)
-        while (!pila.pilaVacia()) {
-            int tope = pila.tope();
-            // Si el tope actual ya lo habiamos visto, significa que es un repetido
-            if (unicos.pertenece(tope)) {
-                repetidos.agregar(tope); // El Conjunto se encarga solo de no duplicar dentro de los repetidos
-            } else {
-                // Si es la primera vez que lo vemos, lo registramos en el conjunto de control
-                unicos.agregar(tope);
+        //recorro pila y cuento valores pares
+        while(!pila.pilaVacia()){//l
+            if(pila.tope() % 2 == 0){//c
+                cantidadPares += 1;//c
             }
-            aux.apilar(tope);
-            pila.desapilar();
+            cantidad += 1;//c
+            aux.apilar(pila.tope());//c
+            pila.desapilar();//c
         }
-        
-        // Restauramos la pila original
-        while (!aux.pilaVacia()) {
-            pila.apilar(aux.tope());
-            aux.desapilar();
+        //reingreso datos del auxiliar a la pila
+        while(!aux.pilaVacia()){//l
+            pila.apilar(aux.tope());//c
+            aux.desapilar();//c
         }
-        
-        return repetidos;
+        // defino porcentaje final
+        porcentaje = (float) cantidadPares / cantidad * 100;//c
+        return porcentaje;//c
     }
+    // Ejercicio 7
+    public static ConjuntoTDA ElementosRepetidos(PilaTDA pila){//p
+        //inicializo auxiliares y variables
+        ConjuntoTDA Repetidos = new ConjuntoTDA(); //c
+        Repetidos.inicializarConjunto();//c
+        ConjuntoTDA Originales = new ConjuntoTDA();//c
+        Originales.inicializarConjunto();//c
+        PilaTDA aux = new PilaTDA();//c
+        aux.inicializarPila();//c
 
-    // Ejercicio 8: Cola sin repeticiones (primer representante)
-    public static ColaTDA colaSinRepetidos(ColaTDA cola) {
-        // Cola auxiliar para reconstruir la estructura sin modificarla
-        ColaTDA aux = new ColaDin();
-        aux.inicializarCola();
-        // Cola final para retornar los resultados ordenados
-        ColaTDA res = new ColaDin();
-        res.inicializarCola();
-        // Conjunto para llevar el historial de elementos procesados y evitar encolar posteriores copias
-        ConjuntoTDA unicos = new ConjuntoDin();
-        unicos.inicializarConjunto();
-        
-        while (!cola.colaVacia()) {
-            int primero = cola.primero();
-            // Si no habiamos visto este elemento antes, es su primer representante
-            if (!unicos.pertenece(primero)) {
-                unicos.agregar(primero); // Lo marcamos como visto
-                res.acolar(primero); // Lo agregamos a la solucion (mantiene el orden FIFO relativo)
+        //me fijo si el valor ya esta en el conjunto y si ya pertenece es porque esta repetido
+        while(!pila.pilaVacia()){//p
+            if(Originales.pertenece(pila.tope())){//l
+                Repetidos.agregar(pila.tope());//l
+            }else{//c
+                Originales.agregar(pila.tope());//l
             }
-            aux.acolar(primero);
-            cola.desacolar();
+            aux.apilar(pila.tope());//c
+            pila.desapilar();//c
         }
-        
-        // Restauramos los valores a la cola parametrica
-        while (!aux.colaVacia()) {
-            cola.acolar(aux.primero());
-            aux.desacolar();
+        while(!aux.pilaVacia()){//l
+            pila.apilar(aux.tope());//c
+            aux.desapilar();//c
         }
-        
-        return res;
+        return Repetidos;//c
+    } 
+
+    // Ejercicio 8
+    public static ColaTDA SinRepetidos(ColaTDA cola){//p
+        //inicializo variables y auxiliares
+        ConjuntoTDA Originales = new ConjuntoTDA();//c
+        Originales.inicializarConjunto();//c
+        ColaTDA ColaSinRepes = new ColaTDA();//c
+        ColaSinRepes.inicializarCola();//c
+        ColaTDA Original = new ColaTDA();//c
+        Original.inicializarCola();//c
+
+        //si no pertenece al conjunto se agrega al conjunto y a la cola sin repetidos y se guarda una copia del original
+        while(!cola.colaVacia()){//p
+            if(!Originales.pertenece(cola.primero())){//l
+                Originales.agregar(cola.primero());//l
+                ColaSinRepes.acolar(cola.primero());//l
+            }
+            Original.acolar(cola.primero());//l
+            cola.desacolar();//c
+        }
+        //se recrea el original
+        while(!Original.colaVacia()){//p
+            cola.acolar(Original.primero());//l
+            Original.desacolar();//c
+        }
+        return ColaSinRepes;//c
     }
 
     // Ejercicio 9: Conjunto con los elementos comunes de la pila y la cola
